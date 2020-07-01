@@ -63,7 +63,7 @@ describe('memes routes', () => {
       });
   });
 
-  it.only('DELETEs a meme', async() => {
+  it('DELETEs a meme', async() => {
     const newMeme = await Meme.create({
       top: 'this meme is',
       image: 'link.com',
