@@ -1,9 +1,10 @@
 const { prepare, agent } = require('../db/data-helpers');
+const Meme = require('../lib/models/Meme');
 
 describe('memes routes', () => {
   it.only('POSTs a new meme', async() => {
     return agent
-      .post('/api/v1/actors/')
+      .post('/api/v1/memes')
       .send({
         top: 'here is the setup',
         image: 'memeurl.com',
@@ -21,42 +22,64 @@ describe('memes routes', () => {
   });
 
   it('GETs all the memes', async() => {
-    const actors = prepare(await Actor.find().select({ name: true }));
+    const memes = prepare(await Meme.find());
 
     return agent
-      .get('/api/v1/actors')
+      .get('/api/v1/memes')
       .then(res => {
-        expect(res.body).toEqual(actors);
+        expect(res.body).toEqual(memes);
       });
   });
 
   it('GETs a meme by id', async() => {
-    const actors = prepare(await Actor.find().select({ name: true }));
+    const meme = prepare(await Meme.findOne());
 
     return agent
-      .get('/api/v1/actors')
+      .get(`/api/v1/memes/${meme._id}`)
       .then(res => {
-        expect(res.body).toEqual(actors);
+        expect(res.body).toEqual(meme);
       });
   });
 
   it('PUTs a meme by updating it', async() => {
-    const actors = prepare(await Actor.find().select({ name: true }));
+    const meme = prepare(await Meme.findOne());
+    const update = {
+      top: 'here is the new setup',
+      image: 'newlink@url.com',
+      bottom: 'and the new punchline'
+    };
 
     return agent
-      .get('/api/v1/actors')
+      .put(`/api/v1/memes/${meme._id}`)
+      .send(update)
       .then(res => {
-        expect(res.body).toEqual(actors);
+        expect(res.body).toEqual({
+          _id: meme._id,
+          top: update.top,
+          image: update.image,
+          bottom: update.bottom,
+          __v: 0
+        });
       });
   });
 
   it('DELETEs a meme', async() => {
-    const actors = prepare(await Actor.find().select({ name: true }));
+    const newMeme = await Meme.create({
+      top: 'this meme is',
+      image: 'link.com',
+      bottom: 'about to be deleted'
+    });
 
     return agent
-      .get('/api/v1/actors')
+      .delete(`/api/v1/actors/${newMeme._id}`)
       .then(res => {
-        expect(res.body).toEqual(actors);
+        expect(res.body).toEqual({
+          _id: newMeme._id,
+          top: newMeme.top,
+          image: newMeme.image,
+          bottom: newMeme.bottom,
+          __v: 0
+        });
       });
   });
 });
