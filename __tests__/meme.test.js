@@ -2,7 +2,7 @@ const { prepare, agent } = require('../db/data-helpers');
 const Meme = require('../lib/models/Meme');
 
 describe('memes routes', () => {
-  it.only('POSTs a new meme', async() => {
+  it('POSTs a new meme', async() => {
     return agent
       .post('/api/v1/memes')
       .send({
@@ -63,7 +63,7 @@ describe('memes routes', () => {
       });
   });
 
-  it('DELETEs a meme', async() => {
+  it.only('DELETEs a meme', async() => {
     const newMeme = await Meme.create({
       top: 'this meme is',
       image: 'link.com',
@@ -71,10 +71,10 @@ describe('memes routes', () => {
     });
 
     return agent
-      .delete(`/api/v1/actors/${newMeme._id}`)
+      .delete(`/api/v1/memes/${newMeme._id}`)
       .then(res => {
         expect(res.body).toEqual({
-          _id: newMeme._id,
+          _id: newMeme.id,
           top: newMeme.top,
           image: newMeme.image,
           bottom: newMeme.bottom,
